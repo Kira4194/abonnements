@@ -70,6 +70,8 @@
   .carte { background: var(--carte); border-radius: 20px; padding: 14px; margin-bottom: 10px; border: 1px solid var(--ligne); backdrop-filter: blur(8px); }
   .haut2 { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
   .logo { width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #111; flex: 0 0 auto; box-shadow: 0 0 14px var(--glow); }
+  .logo img { width: 28px; height: 28px; object-fit: contain; }
+  .logo.avec-image { background: #fff !important; }
   .infos { flex: 1; min-width: 0; }
   .infos .nom { font-weight: 700; font-size: .98rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .infos .sous { font-size: .75rem; color: var(--muet); margin-top: 2px; }
@@ -210,6 +212,9 @@
       <label id="autreBloc">Précisez la catégorie
         <input type="text" id="categorieAutre" placeholder="Ex. Hébergement serveur">
       </label>
+      <label>Site web (facultatif, pour le logo)
+        <input type="text" id="site" placeholder="Ex. netflix.com">
+      </label>
       <div class="erreur" id="erreur"></div>
       <div class="boutons">
         <button type="button" class="btn fantome" id="btnAnnuler">Annuler</button>
@@ -271,6 +276,7 @@
     "Streaming": "#ff7a8a", "Téléphone / Internet": "#7ab8ff", "Logiciel": "#c4a7ff",
     "Musique": "#7ee89a", "Jeux": "#ffc857", "Transport": "#6ee7f5", "Autre": "#b8c0ba"
   };
+  const SITES = { "crunchyroll": "crunchyroll.com", "claude": "claude.ai", "hetzner": "hetzner.com", "cloudflare": "cloudflare.com" };
   let filtre = "Tous";
   let triParDate = true;
 
@@ -373,7 +379,7 @@
       carte.className = "carte";
       carte.innerHTML = `
         <div class="haut2">
-          <div class="logo" style="background:${couleur(a.categorie)}">${echapper(initiale)}</div>
+          <div class="logo" data-site="${echapper(a.site || SITES[(a.nom || "").trim().toLowerCase()] || "")}" data-ini="${echapper(initiale)}" style="background:${couleur(a.categorie)}">${echapper(initiale)}</div>
           <div class="infos">
             <div class="nom">${echapper(a.nom)}</div>
             <div class="sous">${echapper(a.categorie || "Autre")} · ${enTexte(parseDate(a.echeance))}</div>
@@ -389,6 +395,16 @@
           <button class="supp" data-id="${a.id}">Supprimer</button>
         </div>`;
       conteneur.appendChild(carte);
+    });
+    // Logos : image du site via un service d'icônes (DuckDuckGo), sinon la première lettre
+    conteneur.querySelectorAll(".logo[data-site]").forEach(bloc => {
+      const site = bloc.dataset.site;
+      if (!site) return;
+      const img = document.createElement("img");
+      img.alt = "";
+      img.src = "https://icons.duckduckgo.com/ip3/" + encodeURIComponent(site) + ".ico";
+      img.onerror = () => { img.remove(); bloc.classList.remove("avec-image"); bloc.textContent = bloc.dataset.ini; };
+      img.onload = () => { bloc.classList.add("avec-image"); bloc.textContent = ""; bloc.appendChild(img); };
     });
     conteneur.querySelectorAll(".supp").forEach(b => {
       b.onclick = () => {
@@ -436,7 +452,8 @@
       montant: parseFloat(document.getElementById("montant").value),
       periode: document.getElementById("periode").value,
       echeance: document.getElementById("echeance").value,
-      categorie: cat
+      categorie: cat,
+      site: document.getElementById("site").value.trim()
     });
     if (!sauver(l)) {
       document.getElementById("erreur").textContent = "Enregistrement impossible : ouvrez ce fichier dans Chrome.";
