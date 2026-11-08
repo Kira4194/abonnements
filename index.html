@@ -13,85 +13,68 @@
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; min-height: 100%; }
-  body { background: var(--bg); color: var(--texte); font-family: Inter, system-ui, -apple-system, Roboto, sans-serif;
-    padding-bottom: 110px; transition: background .6s, color .6s; }
-  .ecran { max-width: 430px; margin: 0 auto; padding: 18px 16px 0; }
-
-  /* Thèmes : toutes les couleurs passent par ces variables */
+  body { background: var(--bg); color: var(--texte); font-family: Inter, system-ui, -apple-system, Roboto, sans-serif; padding-bottom: 110px; transition: background .6s, color .6s; }
   body { --bg: #0c0f0d; --carte: #161b18; --carte2: #1e2420; --texte: #f1f5f2; --muet: #8a948d; --ligne: rgba(255,255,255,.07);
     --accent: #b8f5c2; --accent-texte: #0b1a10; --glow: rgba(126,232,154,.3);
     --solde: linear-gradient(150deg, #b8f5c2 0%, #7ee89a 55%, #4fd17a 100%); --solde-texte: #0b1a10;
     --nav: #151a17; --rouge: #ff6b6b; --orange: #ffb547; --ok: #7ee89a; }
+  .ecran { max-width: 430px; margin: 0 auto; padding: 18px 16px 0; }
+  .vue { display: none; }
+  .vue.on { display: block; }
 
-  /* En-tête */
   .haut { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
   .haut .salut { color: var(--muet); font-size: .85rem; }
   .haut .titre { font-size: 1.35rem; font-weight: 800; margin-top: 2px; }
   .rond { width: 42px; height: 42px; border-radius: 50%; background: var(--carte2); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent); }
+  h2 { font-size: 1.05rem; margin: 22px 0 10px; }
 
-  /* Badge de thème */
-  .theme { display: flex; justify-content: space-between; align-items: center; background: var(--carte); border: 1px solid var(--ligne);
-    border-radius: 999px; padding: 6px 6px 6px 14px; margin-bottom: 14px; font-size: .8rem; color: var(--muet); }
-  .theme b { color: var(--texte); font-weight: 700; }
-  .theme button { background: var(--accent); color: var(--accent-texte); border: none; border-radius: 999px; padding: 6px 12px; font: inherit; font-weight: 700; font-size: .78rem; cursor: pointer; }
-  .points { display: flex; gap: 5px; margin-left: 8px; }
-  .points i { width: 6px; height: 6px; border-radius: 50%; background: var(--muet); opacity: .4; transition: all .4s; }
-  .points i.on { opacity: 1; background: var(--accent); width: 14px; border-radius: 4px; }
-
-  /* Bloc de solde */
   .solde { border-radius: 26px; padding: 20px; background: var(--solde); color: var(--solde-texte); box-shadow: 0 12px 40px var(--glow); }
   .solde .label { font-size: .85rem; opacity: .75; font-weight: 600; }
-  .solde .montant { font-size: 2.4rem; font-weight: 800; letter-spacing: -.02em; margin: 4px 0 16px; }
-  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .pastille { background: rgba(0,0,0,.35); color: #fff; border-radius: 16px; padding: 10px 12px; backdrop-filter: blur(6px); }
-  .pastille .k { font-size: .72rem; opacity: .75; }
-  .pastille .v { font-weight: 800; font-size: 1rem; }
+  .solde .montant { font-size: 2.4rem; font-weight: 800; letter-spacing: -.02em; margin: 4px 0 6px; }
+  .solde .an { font-size: .9rem; opacity: .8; font-weight: 600; }
 
-  /* Boutons d'action */
-  .actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0 8px; }
-  .action { background: var(--carte); border: 1px solid var(--ligne); border-radius: 18px; padding: 14px 6px; text-align: center; color: var(--texte); cursor: pointer; font: inherit; }
-  .action .cercle { width: 40px; height: 40px; border-radius: 50%; margin: 0 auto 8px; background: var(--carte2); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--accent); box-shadow: 0 0 14px var(--glow); }
-  .action span { font-size: .78rem; font-weight: 600; }
-
-  /* Sections */
-  .section { display: flex; justify-content: space-between; align-items: center; margin: 22px 0 10px; }
-  .section h2 { font-size: 1.05rem; margin: 0; }
-  .section a { color: var(--accent); font-size: .85rem; font-weight: 600; cursor: pointer; }
-  .filtres { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
-  .filtres::-webkit-scrollbar { display: none; }
-  .chip { flex: 0 0 auto; background: var(--carte); border: 1px solid var(--ligne); color: var(--muet); padding: 8px 14px; border-radius: 999px; font: inherit; font-size: .82rem; font-weight: 600; cursor: pointer; }
-  .chip.actif { background: var(--accent); color: var(--accent-texte); border-color: var(--accent); }
-
-  /* Alertes */
-  .alerte { background: rgba(255,181,71,.12); border: 1px solid rgba(255,181,71,.35); color: var(--orange); border-radius: 16px; padding: 12px 14px; margin-bottom: 8px; font-size: .9rem; }
-  .alerte.urgent { background: rgba(255,107,107,.12); border-color: rgba(255,107,107,.4); color: var(--rouge); }
-
-  /* Cartes */
-  .carte { background: var(--carte); border-radius: 20px; padding: 14px; margin-bottom: 10px; border: 1px solid var(--ligne); backdrop-filter: blur(8px); }
-  .haut2 { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-  .logo { width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #111; flex: 0 0 auto; box-shadow: 0 0 14px var(--glow); }
+  .carte { background: var(--carte); border-radius: 20px; padding: 14px; margin-bottom: 10px; border: 1px solid var(--ligne); }
+  .ligne { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .gauche { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .logo { width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #111; flex: 0 0 auto; box-shadow: 0 0 14px var(--glow); overflow: hidden; }
   .logo img { width: 28px; height: 28px; object-fit: contain; }
   .logo.avec-image { background: #fff !important; }
   .infos { flex: 1; min-width: 0; }
-  .infos .nom { font-weight: 700; font-size: .98rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .infos .sous { font-size: .75rem; color: var(--muet); margin-top: 2px; }
-  .prix { text-align: right; }
+  .nom { font-weight: 700; font-size: .98rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sous { font-size: .75rem; color: var(--muet); margin-top: 2px; }
+  .prix { text-align: right; white-space: nowrap; }
   .prix .montant { font-weight: 800; font-size: 1rem; }
   .prix .per { font-size: .72rem; color: var(--muet); }
-  .barre { height: 6px; background: var(--carte2); border-radius: 6px; margin: 12px 0 8px; overflow: hidden; }
-  .barre div { height: 100%; border-radius: 6px; }
-  .pied { display: flex; justify-content: space-between; align-items: center; font-size: .78rem; color: var(--muet); }
-  .badge { font-size: .72rem; padding: 3px 9px; border-radius: 999px; font-weight: 700; }
-  .supp { background: none; border: none; color: var(--rouge); font: inherit; font-size: .78rem; font-weight: 600; cursor: pointer; padding: 4px; }
+  .supp { background: none; border: none; color: var(--rouge); font: inherit; font-size: .8rem; font-weight: 600; cursor: pointer; padding: 6px 0 0; }
   .vide { text-align: center; color: var(--muet); padding: 40px 10px; font-size: .92rem; }
+  .badge { font-size: .72rem; padding: 3px 9px; border-radius: 999px; font-weight: 700; display: inline-block; margin-top: 6px; }
 
-  /* Répartition */
+  .chip-ligne { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; margin-bottom: 12px; }
+  .chip-ligne::-webkit-scrollbar { display: none; }
+  .chip { flex: 0 0 auto; background: var(--carte); border: 1px solid var(--ligne); color: var(--muet); padding: 8px 14px; border-radius: 999px; font: inherit; font-size: .82rem; font-weight: 600; cursor: pointer; }
+  .chip.actif { background: var(--accent); color: var(--accent-texte); border-color: var(--accent); }
+
   .repart { display: flex; height: 12px; border-radius: 8px; overflow: hidden; background: var(--carte2); }
   .repart div { height: 100%; }
   .legende { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 12px; font-size: .78rem; color: var(--muet); }
   .legende i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
 
-  /* Barre du bas */
+  .stat2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .stat2 .carte { margin: 0; }
+  .stat2 .v { font-size: 1.25rem; font-weight: 800; margin-top: 4px; }
+
+  .alerte { background: rgba(255,181,71,.12); border: 1px solid rgba(255,181,71,.35); color: var(--orange); border-radius: 16px; padding: 12px 14px; margin-bottom: 8px; font-size: .9rem; }
+  .alerte.urgent { background: rgba(255,107,107,.12); border-color: rgba(255,107,107,.4); color: var(--rouge); }
+
+  .theme { display: flex; justify-content: space-between; align-items: center; background: var(--carte); border: 1px solid var(--ligne); border-radius: 999px; padding: 6px 6px 6px 14px; font-size: .8rem; color: var(--muet); margin-top: 6px; }
+  .theme b { color: var(--texte); font-weight: 700; }
+  .theme button { background: var(--accent); color: var(--accent-texte); border: none; border-radius: 999px; padding: 6px 12px; font: inherit; font-weight: 700; font-size: .78rem; cursor: pointer; }
+  .points { display: inline-flex; gap: 5px; margin-right: 8px; vertical-align: middle; }
+  .points i { width: 6px; height: 6px; border-radius: 50%; background: var(--muet); opacity: .4; transition: all .4s; }
+  .points i.on { opacity: 1; background: var(--accent); width: 14px; border-radius: 4px; }
+
+  .tri { color: var(--accent); font-size: .85rem; font-weight: 600; cursor: pointer; background: none; border: none; font: inherit; padding: 0; }
+
   .nav { position: fixed; left: 50%; transform: translateX(-50%); bottom: 16px; width: calc(100% - 32px); max-width: 398px; height: 70px;
     background: var(--nav); border: 1px solid var(--ligne); border-radius: 26px; display: flex; justify-content: space-around; align-items: center;
     box-shadow: 0 10px 30px rgba(0,0,0,.4); z-index: 5; transition: background .6s; }
@@ -100,7 +83,6 @@
   .nav button .ic { font-size: 1.2rem; }
   .nav .fab { width: 58px; height: 58px; border-radius: 50%; background: var(--accent); color: var(--accent-texte); font-size: 1.9rem; font-weight: 300; display: flex; align-items: center; justify-content: center; margin-top: -26px; box-shadow: 0 8px 24px var(--glow); padding: 0; }
 
-  /* Fenêtre d'ajout */
   .voile { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: flex-end; justify-content: center; z-index: 10; }
   .voile.ouvert { display: flex; }
   .feuille { background: var(--nav); width: 100%; max-width: 430px; border-radius: 26px 26px 0 0; padding: 22px 18px 28px; max-height: 92vh; overflow-y: auto; }
@@ -121,59 +103,65 @@
 
 <div class="ecran">
 
-  <div class="haut">
-    <div>
-      <div class="salut" id="salut">Bonjour</div>
-      <div class="titre">Mes abonnements</div>
+  <!-- ACCUEIL : l'essentiel seulement -->
+  <section class="vue on" id="vAccueil">
+    <div class="haut">
+      <div>
+        <div class="salut" id="salut">Bonjour</div>
+        <div class="titre">Mes abonnements</div>
+      </div>
+      <div class="rond">A</div>
     </div>
-    <div class="rond">A</div>
-  </div>
+    <div class="solde">
+      <div class="label">Dépense mensuelle</div>
+      <div class="montant" id="totalMois">0,00 €</div>
+      <div class="an" id="totalAn">0,00 € par an</div>
+    </div>
+    <h2>Prochains prélèvements</h2>
+    <div id="accueilListe"></div>
+  </section>
 
-  <div class="theme">
-    <span>Thème : <b id="nomTheme">Vert nuit</b></span>
-    <span style="display:flex;align-items:center">
-      <span class="points" id="points"></span>
+  <!-- STATS : répartition + thème -->
+  <section class="vue" id="vStats">
+    <div class="haut"><div><div class="titre">Statistiques</div></div></div>
+    <div class="stat2">
+      <div class="carte"><div class="sous">Par mois</div><div class="v" id="sMois">0,00 €</div></div>
+      <div class="carte"><div class="sous">Par an</div><div class="v" id="sAn">0,00 €</div></div>
+    </div>
+    <h2>Répartition</h2>
+    <div class="carte" id="cardRepart">
+      <div class="repart" id="barres"></div>
+      <div class="legende" id="legende"></div>
+    </div>
+    <h2>Thème</h2>
+    <div class="theme">
+      <span><span class="points" id="points"></span><b id="nomTheme">Vert nuit</b></span>
       <button id="btnPause">Pause</button>
-    </span>
-  </div>
-
-  <div class="solde">
-    <div class="label">Dépense mensuelle</div>
-    <div class="montant" id="totalMois">0,00 €</div>
-    <div class="duo">
-      <div class="pastille"><div class="k">Par an</div><div class="v" id="totalAn">0,00 €</div></div>
-      <div class="pastille"><div class="k">Abonnements</div><div class="v" id="nbAbos">0</div></div>
     </div>
-  </div>
+  </section>
 
-  <div class="actions">
-    <button class="action" id="actAjout"><div class="cercle">+</div><span>Ajouter</span></button>
-    <button class="action" id="actAlertes"><div class="cercle">!</div><span>Alertes</span></button>
-    <button class="action" id="actStats"><div class="cercle">%</div><span>Répartition</span></button>
-  </div>
+  <!-- ALERTES -->
+  <section class="vue" id="vAlertes">
+    <div class="haut"><div><div class="titre">Alertes</div></div></div>
+    <div id="alertesListe"></div>
+  </section>
 
-  <div id="zoneAlertes"></div>
-
-  <div class="section"><h2>Catégories</h2></div>
-  <div class="filtres" id="filtres"></div>
-
-  <div class="section"><h2>Mes abonnements</h2><a id="triInfo">Par date</a></div>
-  <div id="liste"></div>
-
-  <div class="section" id="ancreRepart"><h2>Répartition</h2></div>
-  <div class="carte" id="cardRepart">
-    <div class="repart" id="barres"></div>
-    <div class="legende" id="legende"></div>
-  </div>
+  <!-- LISTE : tous les abonnements, avec suppression et filtres -->
+  <section class="vue" id="vListe">
+    <div class="haut"><div><div class="titre">Tous mes abonnements</div></div></div>
+    <div class="chip-ligne" id="filtres"></div>
+    <div class="ligne" style="margin-bottom:10px"><span class="sous" id="compte"></span><button class="tri" id="triBtn">Par date</button></div>
+    <div id="liste"></div>
+  </section>
 
 </div>
 
 <nav class="nav">
-  <button class="on" id="navAccueil"><span class="ic">⌂</span>Accueil</button>
-  <button id="navStats"><span class="ic">◔</span>Stats</button>
+  <button class="on" data-vue="vAccueil"><span class="ic">⌂</span>Accueil</button>
+  <button data-vue="vStats"><span class="ic">◔</span>Stats</button>
   <button class="fab" id="navAjout" aria-label="Ajouter">+</button>
-  <button id="navAlertes"><span class="ic">◉</span>Alertes</button>
-  <button id="navListe"><span class="ic">≡</span>Liste</button>
+  <button data-vue="vAlertes"><span class="ic">◉</span>Alertes</button>
+  <button data-vue="vListe"><span class="ic">≡</span>Liste</button>
 </nav>
 
 <div class="voile" id="voile">
@@ -227,44 +215,33 @@
 <script>
   // ---------- Thèmes (changent toutes les 60 secondes) ----------
   const THEMES = [
-    { nom: "Vert nuit", vars: {
-        "--bg": "#0c0f0d", "--carte": "#161b18", "--carte2": "#1e2420", "--texte": "#f1f5f2", "--muet": "#8a948d",
+    { nom: "Vert nuit", vars: { "--bg": "#0c0f0d", "--carte": "#161b18", "--carte2": "#1e2420", "--texte": "#f1f5f2", "--muet": "#8a948d",
         "--ligne": "rgba(255,255,255,.07)", "--accent": "#b8f5c2", "--accent-texte": "#0b1a10", "--glow": "rgba(126,232,154,.3)",
         "--solde": "linear-gradient(150deg,#b8f5c2 0%,#7ee89a 55%,#4fd17a 100%)", "--solde-texte": "#0b1a10",
-        "--nav": "#151a17", "--rouge": "#ff6b6b", "--orange": "#ffb547" } },
-    { nom: "Violet & rose", vars: {
-        "--bg": "#1a1638", "--carte": "#241f4a", "--carte2": "#2f2960", "--texte": "#f4f0ff", "--muet": "#a9a3d6",
+        "--nav": "#151a17", "--rouge": "#ff6b6b", "--orange": "#ffb547", "--ok": "#7ee89a" } },
+    { nom: "Violet & rose", vars: { "--bg": "#1a1638", "--carte": "#241f4a", "--carte2": "#2f2960", "--texte": "#f4f0ff", "--muet": "#a9a3d6",
         "--ligne": "rgba(255,255,255,.08)", "--accent": "#ff7ac8", "--accent-texte": "#1a1638", "--glow": "rgba(255,122,200,.4)",
         "--solde": "linear-gradient(150deg,#3a2d7a 0%,#6b3fb5 55%,#ff7ac8 100%)", "--solde-texte": "#ffffff",
-        "--nav": "#211c44", "--rouge": "#ff5c7a", "--orange": "#ffb547" } },
-    { nom: "Bleu & lime", vars: {
-        "--bg": "#0b1426", "--carte": "#14203d", "--carte2": "#1c2c52", "--texte": "#eef3ff", "--muet": "#8ea0c8",
+        "--nav": "#211c44", "--rouge": "#ff5c7a", "--orange": "#ffb547", "--ok": "#7ee89a" } },
+    { nom: "Bleu & lime", vars: { "--bg": "#0b1426", "--carte": "#14203d", "--carte2": "#1c2c52", "--texte": "#eef3ff", "--muet": "#8ea0c8",
         "--ligne": "rgba(255,255,255,.07)", "--accent": "#d4ff3a", "--accent-texte": "#0b1426", "--glow": "rgba(212,255,58,.3)",
         "--solde": "linear-gradient(150deg,#2b5cd6 0%,#7a6cff 55%,#d4ff3a 120%)", "--solde-texte": "#ffffff",
-        "--nav": "#101b33", "--rouge": "#ff6b6b", "--orange": "#ffb547" } },
-    { nom: "Corail & ambre", vars: {
-        "--bg": "#1c1012", "--carte": "#2a181b", "--carte2": "#3a2226", "--texte": "#fff2ee", "--muet": "#b89a94",
+        "--nav": "#101b33", "--rouge": "#ff6b6b", "--orange": "#ffb547", "--ok": "#d4ff3a" } },
+    { nom: "Corail & ambre", vars: { "--bg": "#1c1012", "--carte": "#2a181b", "--carte2": "#3a2226", "--texte": "#fff2ee", "--muet": "#b89a94",
         "--ligne": "rgba(255,255,255,.07)", "--accent": "#ffb547", "--accent-texte": "#1c1012", "--glow": "rgba(255,142,83,.35)",
         "--solde": "linear-gradient(150deg,#ff6b6b 0%,#ff8e53 55%,#ffb547 100%)", "--solde-texte": "#1c1012",
-        "--nav": "#24151a", "--rouge": "#ff6b6b", "--orange": "#ffd27a" } }
+        "--nav": "#24151a", "--rouge": "#ff6b6b", "--orange": "#ffd27a", "--ok": "#ffb547" } }
   ];
-  let indexTheme = 0;
-  let pause = false;
-  const DUREE_THEME = 60000;
-
+  let indexTheme = 0, pause = false;
   function appliquerTheme(i) {
     indexTheme = i;
     const t = THEMES[i];
     Object.entries(t.vars).forEach(([k, v]) => document.body.style.setProperty(k, v));
     document.getElementById("nomTheme").textContent = t.nom;
-    const pts = document.getElementById("points");
-    pts.innerHTML = THEMES.map((_, k) => `<i class="${k === i ? "on" : ""}"></i>`).join("");
+    document.getElementById("points").innerHTML = THEMES.map((_, k) => `<i class="${k === i ? "on" : ""}"></i>`).join("");
   }
-  setInterval(() => { if (!pause) appliquerTheme((indexTheme + 1) % THEMES.length); }, DUREE_THEME);
-  document.getElementById("btnPause").onclick = e => {
-    pause = !pause;
-    e.target.textContent = pause ? "Reprendre" : "Pause";
-  };
+  setInterval(() => { if (!pause) appliquerTheme((indexTheme + 1) % THEMES.length); }, 60000);
+  document.getElementById("btnPause").onclick = e => { pause = !pause; e.target.textContent = pause ? "Reprendre" : "Pause"; };
   appliquerTheme(0);
 
   // ---------- Données ----------
@@ -272,152 +249,88 @@
   const JOURS_ALERTE = 7;
   const MOIS = { mois: 1, trimestre: 3, an: 12 };
   const LIBELLE = { mois: "mois", trimestre: "trimestre", an: "an" };
-  const COULEURS = {
-    "Streaming": "#ff7a8a", "Téléphone / Internet": "#7ab8ff", "Logiciel": "#c4a7ff",
-    "Musique": "#7ee89a", "Jeux": "#ffc857", "Transport": "#6ee7f5", "Autre": "#b8c0ba"
-  };
+  const COULEURS = { "Streaming": "#ff7a8a", "Téléphone / Internet": "#7ab8ff", "Logiciel": "#c4a7ff", "Musique": "#7ee89a", "Jeux": "#ffc857", "Transport": "#6ee7f5", "Autre": "#b8c0ba" };
   const SITES = { "crunchyroll": "crunchyroll.com", "claude": "claude.ai", "hetzner": "hetzner.com", "cloudflare": "cloudflare.com" };
-  let filtre = "Tous";
-  let triParDate = true;
-
-  // Abonnements de départ (une seule fois, sur cet appareil)
   const DEPART = [
     { nom: "Crunchyroll", montant: 6.99, periode: "mois", echeance: "2026-11-10", categorie: "Streaming" },
     { nom: "Claude", montant: 21.60, periode: "mois", echeance: "2026-11-28", categorie: "Logiciel" },
     { nom: "Hetzner", montant: 6.59, periode: "mois", echeance: "2026-12-03", categorie: "Autre" },
     { nom: "Cloudflare", montant: 20.00, periode: "mois", echeance: "2026-12-07", categorie: "Autre" }
   ];
-  if (!localStorage.getItem("seed-v1")) {
-    try {
-      if (!localStorage.getItem(CLE)) {
-        localStorage.setItem(CLE, JSON.stringify(DEPART.map((a, i) => ({ id: "dep" + i, ...a }))));
-      }
-      localStorage.setItem("seed-v1", "1");
-    } catch (e) { /* stockage indisponible : la liste reste vide */ }
-  }
+  let filtre = "Tous", triParDate = true;
 
   function charger() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
   function sauver(l) { try { localStorage.setItem(CLE, JSON.stringify(l)); return true; } catch (e) { return false; } }
+  if (!localStorage.getItem("seed-v1")) {
+    try {
+      if (!localStorage.getItem(CLE)) localStorage.setItem(CLE, JSON.stringify(DEPART.map((a, i) => ({ id: "dep" + i, ...a }))));
+      localStorage.setItem("seed-v1", "1");
+    } catch (e) {}
+  }
 
   function aujourdhui() { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }
   function parseDate(s) { const [a, m, j] = s.split("-").map(Number); return new Date(a, m - 1, j); }
-  function versTexte(d) {
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  }
+  function versTexte(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
   function avancer(d, p) { const n = new Date(d); n.setMonth(n.getMonth() + MOIS[p]); return n; }
   function enTexte(d) { return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }); }
   function joursAvant(s) { return Math.round((parseDate(s) - aujourdhui()) / 86400000); }
   function mettreAJour(l) {
     const auj = aujourdhui(); let m = false;
-    l.forEach(a => {
-      let d = parseDate(a.echeance);
-      while (d < auj) { d = avancer(d, a.periode); m = true; }
-      a.echeance = versTexte(d);
-    });
+    l.forEach(a => { let d = parseDate(a.echeance); while (d < auj) { d = avancer(d, a.periode); m = true; } a.echeance = versTexte(d); });
     if (m) sauver(l);
     return l;
   }
-
   function euros(n) { return n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }); }
   function echapper(t) { const d = document.createElement("div"); d.textContent = t; return d.innerHTML; }
   function couleur(c) { return COULEURS[c] || COULEURS["Autre"]; }
   function mensuel(a) { return a.montant / MOIS[a.periode]; }
   function quand(j) { return j <= 0 ? "aujourd'hui" : j === 1 ? "demain" : `dans ${j} j`; }
+  function siteDe(a) { return a.site || SITES[(a.nom || "").trim().toLowerCase()] || ""; }
 
-  // ---------- Rendu ----------
-  function rendu() {
-    const liste = mettreAJour(charger());
-    const total = liste.reduce((s, a) => s + mensuel(a), 0);
-    document.getElementById("totalMois").textContent = euros(total);
-    document.getElementById("totalAn").textContent = euros(total * 12);
-    document.getElementById("nbAbos").textContent = liste.length;
-
-    const h = new Date().getHours();
-    document.getElementById("salut").textContent = h < 12 ? "Bonjour" : h < 18 ? "Bon après-midi" : "Bonsoir";
-
-    const cats = ["Tous", ...new Set(liste.map(a => a.categorie || "Autre"))];
-    if (!cats.includes(filtre)) filtre = "Tous";
-    const f = document.getElementById("filtres");
-    f.innerHTML = "";
-    cats.forEach(c => {
-      const b = document.createElement("button");
-      b.className = "chip" + (c === filtre ? " actif" : "");
-      b.textContent = c;
-      b.onclick = () => { filtre = c; rendu(); };
-      f.appendChild(b);
-    });
-
-    const zone = document.getElementById("zoneAlertes");
-    zone.innerHTML = "";
-    liste.forEach(a => {
-      const j = joursAvant(a.echeance);
-      if (j <= JOURS_ALERTE) {
-        zone.insertAdjacentHTML("beforeend",
-          `<div class="alerte${j <= 2 ? " urgent" : ""}">${echapper(a.nom)} (${euros(a.montant)}) se prélève ${quand(j)}.</div>`);
-      }
-    });
-
-    const vues = liste.filter(a => filtre === "Tous" || (a.categorie || "Autre") === filtre);
-    vues.sort((a, b) => triParDate ? a.echeance.localeCompare(b.echeance) : a.nom.localeCompare(b.nom));
-    document.getElementById("triInfo").textContent = triParDate ? "Par date" : "Par nom";
-
-    const conteneur = document.getElementById("liste");
-    conteneur.innerHTML = "";
-    if (vues.length === 0) {
-      conteneur.innerHTML = `<div class="vide">Aucun abonnement${filtre !== "Tous" ? " dans cette catégorie" : ""}.<br>Touchez + pour en ajouter un.</div>`;
-    }
-    vues.forEach(a => {
-      const j = joursAvant(a.echeance);
-      const cycle = MOIS[a.periode] * 30;
-      const pct = Math.round((1 - Math.max(0, Math.min(1, j / cycle))) * 100);
-      const bc = j <= 2 ? "var(--rouge)" : j <= JOURS_ALERTE ? "var(--orange)" : "var(--ok)";
-      const badgeFond = j <= 2 ? "rgba(255,107,107,.15)" : j <= JOURS_ALERTE ? "rgba(255,181,71,.15)" : "rgba(126,232,154,.12)";
-      const badgeTexte = j <= 2 ? "var(--rouge)" : j <= JOURS_ALERTE ? "var(--orange)" : "var(--accent)";
-      const initiale = (a.nom || "?").trim().charAt(0).toUpperCase();
-
-      const carte = document.createElement("div");
-      carte.className = "carte";
-      carte.innerHTML = `
-        <div class="haut2">
-          <div class="logo" data-site="${echapper(a.site || SITES[(a.nom || "").trim().toLowerCase()] || "")}" data-ini="${echapper(initiale)}" style="background:${couleur(a.categorie)}">${echapper(initiale)}</div>
-          <div class="infos">
-            <div class="nom">${echapper(a.nom)}</div>
-            <div class="sous">${echapper(a.categorie || "Autre")} · ${enTexte(parseDate(a.echeance))}</div>
-          </div>
-          <div class="prix">
-            <div class="montant">${euros(a.montant)}</div>
-            <div class="per">par ${LIBELLE[a.periode]}</div>
-          </div>
-        </div>
-        <div class="barre"><div style="width:${pct}%;background:${bc}"></div></div>
-        <div class="pied">
-          <span class="badge" style="background:${badgeFond};color:${badgeTexte}">Prélèvement ${quand(j)}</span>
-          <button class="supp" data-id="${a.id}">Supprimer</button>
-        </div>`;
-      conteneur.appendChild(carte);
-    });
-    // Logos : image du site via un service d'icônes (DuckDuckGo), sinon la première lettre
-    conteneur.querySelectorAll(".logo[data-site]").forEach(bloc => {
+  // Logo : image du site, ou la première lettre si elle n'arrive pas
+  function logoHTML(a) {
+    const ini = (a.nom || "?").trim().charAt(0).toUpperCase();
+    return `<div class="logo" data-site="${echapper(siteDe(a))}" data-ini="${echapper(ini)}" style="background:${couleur(a.categorie)}">${echapper(ini)}</div>`;
+  }
+  function remplirLogos(racine) {
+    racine.querySelectorAll(".logo[data-site]").forEach(bloc => {
       const site = bloc.dataset.site;
       if (!site) return;
       const img = document.createElement("img");
       img.alt = "";
-      img.src = "https://icons.duckduckgo.com/ip3/" + encodeURIComponent(site) + ".ico";
-      img.onerror = () => { img.remove(); bloc.classList.remove("avec-image"); bloc.textContent = bloc.dataset.ini; };
       img.onload = () => { bloc.classList.add("avec-image"); bloc.textContent = ""; bloc.appendChild(img); };
+      img.onerror = () => { bloc.classList.remove("avec-image"); };
+      img.src = "https://icons.duckduckgo.com/ip3/" + encodeURIComponent(site) + ".ico";
     });
-    conteneur.querySelectorAll(".supp").forEach(b => {
-      b.onclick = () => {
-        if (!confirm("Supprimer cet abonnement ?")) return;
-        sauver(charger().filter(x => x.id !== b.dataset.id));
-        rendu();
-      };
-    });
+  }
 
+  // ---------- Pages ----------
+  function rendreAccueil(liste, total) {
+    document.getElementById("totalMois").textContent = euros(total);
+    document.getElementById("totalAn").textContent = euros(total * 12) + " par an";
+    const h = new Date().getHours();
+    document.getElementById("salut").textContent = h < 12 ? "Bonjour" : h < 18 ? "Bon après-midi" : "Bonsoir";
+    const triees = [...liste].sort((a, b) => a.echeance.localeCompare(b.echeance));
+    const c = document.getElementById("accueilListe");
+    c.innerHTML = triees.length ? "" : '<div class="vide">Aucun abonnement.</div>';
+    triees.forEach(a => {
+      const j = joursAvant(a.echeance);
+      c.insertAdjacentHTML("beforeend", `
+        <div class="carte"><div class="ligne">
+          <div class="gauche">${logoHTML(a)}<div class="infos"><div class="nom">${echapper(a.nom)}</div>
+            <div class="sous">${enTexte(parseDate(a.echeance))} · ${quand(j)}</div></div></div>
+          <div class="prix"><div class="montant">${euros(a.montant)}</div><div class="per">par ${LIBELLE[a.periode]}</div></div>
+        </div></div>`);
+    });
+    remplirLogos(c);
+  }
+
+  function rendreStats(liste, total) {
+    document.getElementById("sMois").textContent = euros(total);
+    document.getElementById("sAn").textContent = euros(total * 12);
     const parCat = {};
     liste.forEach(a => { const k = a.categorie || "Autre"; parCat[k] = (parCat[k] || 0) + mensuel(a); });
-    const barres = document.getElementById("barres");
-    const leg = document.getElementById("legende");
+    const barres = document.getElementById("barres"), leg = document.getElementById("legende");
     barres.innerHTML = ""; leg.innerHTML = "";
     document.getElementById("cardRepart").style.display = liste.length ? "" : "none";
     Object.entries(parCat).sort((a, b) => b[1] - a[1]).forEach(([cat, v]) => {
@@ -427,20 +340,89 @@
     });
   }
 
-  // ---------- Fenêtre d'ajout ----------
-  const voile = document.getElementById("voile");
-  function ouvrir() { voile.classList.add("ouvert"); }
-  function fermer() { voile.classList.remove("ouvert"); }
-  ["actAjout", "navAjout"].forEach(id => document.getElementById(id).onclick = ouvrir);
-  document.getElementById("btnAnnuler").onclick = fermer;
-  voile.onclick = e => { if (e.target === voile) fermer(); };
+  function rendreAlertes(liste) {
+    const c = document.getElementById("alertesListe");
+    c.innerHTML = "";
+    const proches = liste.filter(a => joursAvant(a.echeance) <= JOURS_ALERTE)
+      .sort((a, b) => a.echeance.localeCompare(b.echeance));
+    if (!proches.length) { c.innerHTML = '<div class="vide">Aucune alerte pour le moment.<br>Les prélèvements dans les 7 prochains jours s\'affichent ici.</div>'; return; }
+    proches.forEach(a => {
+      const j = joursAvant(a.echeance);
+      c.insertAdjacentHTML("beforeend", `<div class="alerte${j <= 2 ? " urgent" : ""}">${echapper(a.nom)} (${euros(a.montant)}) se prélève ${quand(j)}.</div>`);
+    });
+  }
 
+  function rendreListe(liste) {
+    const cats = ["Tous", ...new Set(liste.map(a => a.categorie || "Autre"))];
+    if (!cats.includes(filtre)) filtre = "Tous";
+    const f = document.getElementById("filtres");
+    f.innerHTML = "";
+    cats.forEach(cat => {
+      const b = document.createElement("button");
+      b.className = "chip" + (cat === filtre ? " actif" : "");
+      b.textContent = cat;
+      b.onclick = () => { filtre = cat; rendu(); };
+      f.appendChild(b);
+    });
+    const vues = liste.filter(a => filtre === "Tous" || (a.categorie || "Autre") === filtre)
+      .sort((a, b) => triParDate ? a.echeance.localeCompare(b.echeance) : a.nom.localeCompare(b.nom));
+    document.getElementById("triBtn").textContent = triParDate ? "Par date" : "Par nom";
+    document.getElementById("compte").textContent = vues.length + " abonnement" + (vues.length > 1 ? "s" : "");
+    const c = document.getElementById("liste");
+    c.innerHTML = vues.length ? "" : '<div class="vide">Aucun abonnement ici.</div>';
+    vues.forEach(a => {
+      const j = joursAvant(a.echeance);
+      const bg = j <= 2 ? "rgba(255,107,107,.15)" : j <= JOURS_ALERTE ? "rgba(255,181,71,.15)" : "rgba(126,232,154,.12)";
+      const tx = j <= 2 ? "var(--rouge)" : j <= JOURS_ALERTE ? "var(--orange)" : "var(--accent)";
+      c.insertAdjacentHTML("beforeend", `
+        <div class="carte">
+          <div class="ligne">
+            <div class="gauche">${logoHTML(a)}<div class="infos"><div class="nom">${echapper(a.nom)}</div>
+              <div class="sous">${echapper(a.categorie || "Autre")} · ${enTexte(parseDate(a.echeance))}</div>
+              <span class="badge" style="background:${bg};color:${tx}">${quand(j)}</span></div></div>
+            <div class="prix"><div class="montant">${euros(a.montant)}</div><div class="per">par ${LIBELLE[a.periode]}</div></div>
+          </div>
+          <button class="supp" data-id="${a.id}">Supprimer</button>
+        </div>`);
+    });
+    remplirLogos(c);
+    c.querySelectorAll(".supp").forEach(b => {
+      b.onclick = () => {
+        if (!confirm("Supprimer cet abonnement ?")) return;
+        sauver(charger().filter(x => x.id !== b.dataset.id));
+        rendu();
+      };
+    });
+  }
+
+  function rendu() {
+    const liste = mettreAJour(charger());
+    const total = liste.reduce((s, a) => s + mensuel(a), 0);
+    rendreAccueil(liste, total);
+    rendreStats(liste, total);
+    rendreAlertes(liste);
+    rendreListe(liste);
+  }
+
+  // ---------- Navigation ----------
+  function montrer(id) {
+    document.querySelectorAll(".vue").forEach(v => v.classList.toggle("on", v.id === id));
+    document.querySelectorAll(".nav button[data-vue]").forEach(b => b.classList.toggle("on", b.dataset.vue === id));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  document.querySelectorAll(".nav button[data-vue]").forEach(b => b.onclick = () => montrer(b.dataset.vue));
+  document.getElementById("triBtn").onclick = () => { triParDate = !triParDate; rendu(); };
+
+  // ---------- Ajout ----------
+  const voile = document.getElementById("voile");
+  document.getElementById("navAjout").onclick = () => voile.classList.add("ouvert");
+  document.getElementById("btnAnnuler").onclick = () => voile.classList.remove("ouvert");
+  voile.onclick = e => { if (e.target === voile) voile.classList.remove("ouvert"); };
   document.getElementById("categorie").onchange = e => {
     const autre = e.target.value === "Autre";
     document.getElementById("autreBloc").style.display = autre ? "grid" : "none";
     if (autre) document.getElementById("categorieAutre").focus();
   };
-
   document.getElementById("formulaire").onsubmit = e => {
     e.preventDefault();
     const sel = document.getElementById("categorie").value;
@@ -455,30 +437,13 @@
       categorie: cat,
       site: document.getElementById("site").value.trim()
     });
-    if (!sauver(l)) {
-      document.getElementById("erreur").textContent = "Enregistrement impossible : ouvrez ce fichier dans Chrome.";
-      return;
-    }
+    if (!sauver(l)) { document.getElementById("erreur").textContent = "Enregistrement impossible : ouvrez la page dans Chrome."; return; }
     e.target.reset();
     document.getElementById("autreBloc").style.display = "none";
     document.getElementById("erreur").textContent = "";
-    fermer();
+    voile.classList.remove("ouvert");
     rendu();
   };
-
-  // ---------- Barre du bas ----------
-  function defiler(id) { document.getElementById(id).scrollIntoView({ behavior: "smooth", block: "start" }); }
-  function activer(id) {
-    document.querySelectorAll(".nav button").forEach(b => b.classList.remove("on"));
-    document.getElementById(id).classList.add("on");
-  }
-  document.getElementById("navAccueil").onclick = () => { activer("navAccueil"); window.scrollTo({ top: 0, behavior: "smooth" }); };
-  document.getElementById("navStats").onclick = () => { activer("navStats"); defiler("ancreRepart"); };
-  document.getElementById("actStats").onclick = () => { activer("navStats"); defiler("ancreRepart"); };
-  document.getElementById("navAlertes").onclick = () => { activer("navAlertes"); defiler("zoneAlertes"); };
-  document.getElementById("actAlertes").onclick = () => { activer("navAlertes"); defiler("zoneAlertes"); };
-  document.getElementById("navListe").onclick = () => { activer("navListe"); triParDate = !triParDate; rendu(); defiler("liste"); };
-  document.getElementById("triInfo").onclick = () => { triParDate = !triParDate; rendu(); };
 
   rendu();
 </script>
