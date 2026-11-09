@@ -97,6 +97,10 @@
   .btn.principal { background: var(--accent); color: var(--accent-texte); }
   .btn.fantome { background: var(--carte2); color: var(--texte); }
   #autreBloc { display: none; }
+  .pts { display: flex; justify-content: center; gap: 12px; margin: 14px 0 6px; }
+  .pts button { width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; padding: 0; transition: transform .2s, border-color .2s; }
+  .pts button:hover { transform: scale(1.1); }
+  .pts button.on { border-color: var(--texte); transform: scale(1.18); }
 </style>
 </head>
 <body>
@@ -117,6 +121,7 @@
       <div class="montant" id="totalMois">0,00 €</div>
       <div class="an" id="totalAn">0,00 € par an</div>
     </div>
+    <div class="pts" id="pts"></div>
     <h2>Prochains prélèvements</h2>
     <div id="accueilListe"></div>
   </section>
@@ -132,11 +137,6 @@
     <div class="carte" id="cardRepart">
       <div class="repart" id="barres"></div>
       <div class="legende" id="legende"></div>
-    </div>
-    <h2>Thème</h2>
-    <div class="theme">
-      <span><span class="points" id="points"></span><b id="nomTheme">Vert nuit</b></span>
-      <button id="btnPause">Pause</button>
     </div>
   </section>
 
@@ -213,36 +213,44 @@
 </div>
 
 <script>
-  // ---------- Thèmes (changent toutes les 60 secondes) ----------
+  // ---------- Thèmes : 5 ambiances choisies à la main (pastilles sur l'accueil) ----------
   const THEMES = [
-    { nom: "Vert nuit", vars: { "--bg": "#0c0f0d", "--carte": "#161b18", "--carte2": "#1e2420", "--texte": "#f1f5f2", "--muet": "#8a948d",
-        "--ligne": "rgba(255,255,255,.07)", "--accent": "#b8f5c2", "--accent-texte": "#0b1a10", "--glow": "rgba(126,232,154,.3)",
-        "--solde": "linear-gradient(150deg,#b8f5c2 0%,#7ee89a 55%,#4fd17a 100%)", "--solde-texte": "#0b1a10",
-        "--nav": "#151a17", "--rouge": "#ff6b6b", "--orange": "#ffb547", "--ok": "#7ee89a" } },
-    { nom: "Violet & rose", vars: { "--bg": "#1a1638", "--carte": "#241f4a", "--carte2": "#2f2960", "--texte": "#f4f0ff", "--muet": "#a9a3d6",
-        "--ligne": "rgba(255,255,255,.08)", "--accent": "#ff7ac8", "--accent-texte": "#1a1638", "--glow": "rgba(255,122,200,.4)",
-        "--solde": "linear-gradient(150deg,#3a2d7a 0%,#6b3fb5 55%,#ff7ac8 100%)", "--solde-texte": "#ffffff",
-        "--nav": "#211c44", "--rouge": "#ff5c7a", "--orange": "#ffb547", "--ok": "#7ee89a" } },
-    { nom: "Bleu & lime", vars: { "--bg": "#0b1426", "--carte": "#14203d", "--carte2": "#1c2c52", "--texte": "#eef3ff", "--muet": "#8ea0c8",
-        "--ligne": "rgba(255,255,255,.07)", "--accent": "#d4ff3a", "--accent-texte": "#0b1426", "--glow": "rgba(212,255,58,.3)",
-        "--solde": "linear-gradient(150deg,#2b5cd6 0%,#7a6cff 55%,#d4ff3a 120%)", "--solde-texte": "#ffffff",
-        "--nav": "#101b33", "--rouge": "#ff6b6b", "--orange": "#ffb547", "--ok": "#d4ff3a" } },
-    { nom: "Corail & ambre", vars: { "--bg": "#1c1012", "--carte": "#2a181b", "--carte2": "#3a2226", "--texte": "#fff2ee", "--muet": "#b89a94",
-        "--ligne": "rgba(255,255,255,.07)", "--accent": "#ffb547", "--accent-texte": "#1c1012", "--glow": "rgba(255,142,83,.35)",
-        "--solde": "linear-gradient(150deg,#ff6b6b 0%,#ff8e53 55%,#ffb547 100%)", "--solde-texte": "#1c1012",
-        "--nav": "#24151a", "--rouge": "#ff6b6b", "--orange": "#ffd27a", "--ok": "#ffb547" } }
+    { nom: "Nuit émeraude", pastille: "linear-gradient(135deg,#34d399,#10b981)", vars: { "--bg": "#07140f", "--carte": "#0f2a20", "--carte2": "#163a2d", "--texte": "#ecfdf5", "--muet": "#8fb7a6",
+        "--ligne": "rgba(255,255,255,.07)", "--accent": "#34d399", "--accent-texte": "#04110b", "--glow": "rgba(52,211,153,.3)",
+        "--solde": "linear-gradient(135deg,#34d399,#10b981)", "--solde-texte": "#06130e",
+        "--nav": "#0c1f18", "--rouge": "#ff6b6b", "--orange": "#ffb547", "--ok": "#34d399" } },
+    { nom: "Océan profond", pastille: "linear-gradient(135deg,#38bdf8,#6366f1)", vars: { "--bg": "#07111f", "--carte": "#0f1d33", "--carte2": "#172a48", "--texte": "#eef6ff", "--muet": "#8ea6c8",
+        "--ligne": "rgba(255,255,255,.07)", "--accent": "#38bdf8", "--accent-texte": "#06131f", "--glow": "rgba(56,189,248,.3)",
+        "--solde": "linear-gradient(135deg,#38bdf8,#6366f1)", "--solde-texte": "#ffffff",
+        "--nav": "#0c1830", "--rouge": "#ff6b6b", "--orange": "#ffb547", "--ok": "#38bdf8" } },
+    { nom: "Violet néon doux", pastille: "linear-gradient(135deg,#c084fc,#f472b6)", vars: { "--bg": "#15102e", "--carte": "#211a45", "--carte2": "#2c2459", "--texte": "#f7f2ff", "--muet": "#b1a7d9",
+        "--ligne": "rgba(255,255,255,.08)", "--accent": "#c084fc", "--accent-texte": "#15102e", "--glow": "rgba(192,132,252,.35)",
+        "--solde": "linear-gradient(135deg,#c084fc,#f472b6)", "--solde-texte": "#15102e",
+        "--nav": "#1b1540", "--rouge": "#ff5c7a", "--orange": "#ffb547", "--ok": "#f472b6" } },
+    { nom: "Braise", pastille: "linear-gradient(135deg,#fb923c,#f43f5e)", vars: { "--bg": "#1a0d0a", "--carte": "#2a1612", "--carte2": "#3a1f19", "--texte": "#fff3ec", "--muet": "#bf9d92",
+        "--ligne": "rgba(255,255,255,.07)", "--accent": "#fb923c", "--accent-texte": "#1a0d0a", "--glow": "rgba(251,146,60,.35)",
+        "--solde": "linear-gradient(135deg,#fb923c,#f43f5e)", "--solde-texte": "#1a0d0a",
+        "--nav": "#22120e", "--rouge": "#ff6b6b", "--orange": "#ffd27a", "--ok": "#fb923c" } },
+    { nom: "Forêt dorée", pastille: "linear-gradient(135deg,#facc15,#84cc16)", vars: { "--bg": "#0e1409", "--carte": "#18200f", "--carte2": "#223016", "--texte": "#f7fbe9", "--muet": "#a4b08a",
+        "--ligne": "rgba(255,255,255,.07)", "--accent": "#facc15", "--accent-texte": "#0e1409", "--glow": "rgba(250,204,21,.3)",
+        "--solde": "linear-gradient(135deg,#facc15,#84cc16)", "--solde-texte": "#0e1409",
+        "--nav": "#141c0c", "--rouge": "#ff6b6b", "--orange": "#ffb547", "--ok": "#84cc16" } }
   ];
-  let indexTheme = 0, pause = false;
+  let indexTheme = 0;
   function appliquerTheme(i) {
     indexTheme = i;
     const t = THEMES[i];
     Object.entries(t.vars).forEach(([k, v]) => document.body.style.setProperty(k, v));
-    document.getElementById("nomTheme").textContent = t.nom;
-    document.getElementById("points").innerHTML = THEMES.map((_, k) => `<i class="${k === i ? "on" : ""}"></i>`).join("");
+    document.getElementById("pts").innerHTML = THEMES.map((th, k) =>
+      `<button type="button" class="${k === i ? "on" : ""}" style="background:${th.pastille}" title="${th.nom}" aria-label="${th.nom}" onclick="choisirTheme(${k})"></button>`).join("");
   }
-  setInterval(() => { if (!pause) appliquerTheme((indexTheme + 1) % THEMES.length); }, 60000);
-  document.getElementById("btnPause").onclick = e => { pause = !pause; e.target.textContent = pause ? "Reprendre" : "Pause"; };
-  appliquerTheme(0);
+  function choisirTheme(k) {
+    appliquerTheme(k);
+    try { localStorage.setItem("theme-choisi", String(k)); } catch (e) {}
+  }
+  let memo = 0;
+  try { memo = parseInt(localStorage.getItem("theme-choisi") || "0", 10) || 0; } catch (e) {}
+  appliquerTheme(memo < THEMES.length ? memo : 0);
 
   // ---------- Données ----------
   const CLE = "mes-abonnements-v2";
