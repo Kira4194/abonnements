@@ -23,15 +23,17 @@
   .vue.on { display: block; }
 
   .haut { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-  .haut .salut { color: var(--muet); font-size: .85rem; }
-  .haut .titre { font-size: 1.35rem; font-weight: 800; margin-top: 2px; }
+  .salut { color: var(--muet); font-size: .85rem; }
+  .titre { font-size: 1.35rem; font-weight: 800; margin-top: 2px; }
   .rond { width: 42px; height: 42px; border-radius: 50%; background: var(--carte2); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent); }
   h2 { font-size: 1.05rem; margin: 22px 0 10px; }
 
-  .solde { border-radius: 26px; padding: 20px; background: var(--solde); color: var(--solde-texte); box-shadow: 0 12px 40px var(--glow); }
+  .solde { border-radius: 26px; padding: 20px; background: var(--solde); color: var(--solde-texte); box-shadow: 0 12px 40px var(--glow); cursor: pointer; }
   .solde .label { font-size: .85rem; opacity: .75; font-weight: 600; }
   .solde .montant { font-size: 2.4rem; font-weight: 800; letter-spacing: -.02em; margin: 4px 0 6px; }
   .solde .an { font-size: .9rem; opacity: .8; font-weight: 600; }
+  .flou { filter: blur(10px); transition: filter .25s; user-select: none; }
+  .revele .flou { filter: none; }
 
   .carte { background: var(--carte); border-radius: 20px; padding: 14px; margin-bottom: 10px; border: 1px solid var(--ligne); }
   .ligne { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
@@ -46,8 +48,17 @@
   .prix .montant { font-weight: 800; font-size: 1rem; }
   .prix .per { font-size: .72rem; color: var(--muet); }
   .supp { background: none; border: none; color: var(--rouge); font: inherit; font-size: .8rem; font-weight: 600; cursor: pointer; padding: 6px 0 0; }
-  .vide { text-align: center; color: var(--muet); padding: 40px 10px; font-size: .92rem; }
+  .vide { text-align: center; color: var(--muet); padding: 30px 10px; font-size: .92rem; }
   .badge { font-size: .72rem; padding: 3px 9px; border-radius: 999px; font-weight: 700; display: inline-block; margin-top: 6px; }
+
+  .rowdet summary { list-style: none; cursor: pointer; }
+  .rowdet summary::-webkit-details-marker { display: none; }
+  .detail { margin-top: 12px; border-top: 1px solid var(--ligne); padding-top: 10px; font-size: .85rem; display: grid; gap: 6px; }
+  .detail small { font-size: .7rem; color: var(--muet); text-transform: uppercase; letter-spacing: .06em; margin-top: 6px; }
+  .detail input { font-size: .9rem; padding: 10px; }
+  .detail ul { list-style: none; padding: 0; margin: 0; }
+  .detail li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--ligne); }
+  .detail a { color: var(--accent); font-weight: 700; text-decoration: none; }
 
   .chip-ligne { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; margin-bottom: 12px; }
   .chip-ligne::-webkit-scrollbar { display: none; }
@@ -59,26 +70,26 @@
   .legende { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 12px; font-size: .78rem; color: var(--muet); }
   .legende i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
 
-  .stat2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-  .stat2 .carte { margin: 0; }
-  .stat2 .v { font-size: 1.25rem; font-weight: 800; margin-top: 4px; }
-
   .alerte { background: rgba(255,181,71,.12); border: 1px solid rgba(255,181,71,.35); color: var(--orange); border-radius: 16px; padding: 12px 14px; margin-bottom: 8px; font-size: .9rem; }
   .alerte.urgent { background: rgba(255,107,107,.12); border-color: rgba(255,107,107,.4); color: var(--rouge); }
 
-  .theme { display: flex; justify-content: space-between; align-items: center; background: var(--carte); border: 1px solid var(--ligne); border-radius: 999px; padding: 6px 6px 6px 14px; font-size: .8rem; color: var(--muet); margin-top: 6px; }
-  .theme b { color: var(--texte); font-weight: 700; }
-  .theme button { background: var(--accent); color: var(--accent-texte); border: none; border-radius: 999px; padding: 6px 12px; font: inherit; font-weight: 700; font-size: .78rem; cursor: pointer; }
-  .points { display: inline-flex; gap: 5px; margin-right: 8px; vertical-align: middle; }
-  .points i { width: 6px; height: 6px; border-radius: 50%; background: var(--muet); opacity: .4; transition: all .4s; }
-  .points i.on { opacity: 1; background: var(--accent); width: 14px; border-radius: 4px; }
+  .pts { display: flex; justify-content: center; gap: 12px; margin: 14px 0 6px; }
+  .pts button { width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; padding: 0; transition: transform .2s, border-color .2s; }
+  .pts button:hover { transform: scale(1.1); }
+  .pts button.on { border-color: var(--texte); transform: scale(1.18); }
+
+  .segm { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border-radius: 14px; background: var(--carte2); }
+  .segm button { background: none; border: none; color: var(--muet); font: inherit; padding: 10px; border-radius: 11px; cursor: pointer; }
+  .segm button.on { background: var(--accent); color: var(--accent-texte); font-weight: 700; }
+  .reglage { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px; border-radius: 16px; background: var(--carte); border: 1px solid var(--ligne); margin-bottom: 8px; cursor: pointer; }
+  .reglage b { font-size: .95rem; }
 
   .tri { color: var(--accent); font-size: .85rem; font-weight: 600; cursor: pointer; background: none; border: none; font: inherit; padding: 0; }
 
   .nav { position: fixed; left: 50%; transform: translateX(-50%); bottom: 16px; width: calc(100% - 32px); max-width: 398px; height: 70px;
     background: var(--nav); border: 1px solid var(--ligne); border-radius: 26px; display: flex; justify-content: space-around; align-items: center;
     box-shadow: 0 10px 30px rgba(0,0,0,.4); z-index: 5; transition: background .6s; }
-  .nav button { background: none; border: none; color: var(--muet); font: inherit; font-size: .68rem; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 6px 10px; }
+  .nav button { background: none; border: none; color: var(--muet); font: inherit; font-size: .68rem; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 6px 8px; }
   .nav button.on { color: var(--accent); }
   .nav button .ic { font-size: 1.2rem; }
   .nav .fab { width: 58px; height: 58px; border-radius: 50%; background: var(--accent); color: var(--accent-texte); font-size: 1.9rem; font-weight: 300; display: flex; align-items: center; justify-content: center; margin-top: -26px; box-shadow: 0 8px 24px var(--glow); padding: 0; }
@@ -97,17 +108,13 @@
   .btn.principal { background: var(--accent); color: var(--accent-texte); }
   .btn.fantome { background: var(--carte2); color: var(--texte); }
   #autreBloc { display: none; }
-  .pts { display: flex; justify-content: center; gap: 12px; margin: 14px 0 6px; }
-  .pts button { width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; padding: 0; transition: transform .2s, border-color .2s; }
-  .pts button:hover { transform: scale(1.1); }
-  .pts button.on { border-color: var(--texte); transform: scale(1.18); }
 </style>
 </head>
 <body>
 
 <div class="ecran">
 
-  <!-- ACCUEIL : l'essentiel seulement -->
+  <!-- ACCUEIL -->
   <section class="vue on" id="vAccueil">
     <div class="haut">
       <div>
@@ -116,52 +123,66 @@
       </div>
       <div class="rond">A</div>
     </div>
-    <div class="solde">
+    <div class="solde flouable" id="carteSolde">
       <div class="label">Dépense mensuelle</div>
-      <div class="montant" id="totalMois">0,00 €</div>
-      <div class="an" id="totalAn">0,00 € par an</div>
+      <div class="montant flou" id="totalMois">0,00 €</div>
+      <div class="an flou" id="totalAn">0,00 € par an</div>
     </div>
     <div class="pts" id="pts"></div>
+    <h2>Alertes</h2>
+    <div id="alertesListe"></div>
     <h2>Prochains prélèvements</h2>
     <div id="accueilListe"></div>
   </section>
 
-  <!-- STATS : répartition + thème -->
-  <section class="vue" id="vStats">
-    <div class="haut"><div><div class="titre">Statistiques</div></div></div>
-    <div class="stat2">
-      <div class="carte"><div class="sous">Par mois</div><div class="v" id="sMois">0,00 €</div></div>
-      <div class="carte"><div class="sous">Par an</div><div class="v" id="sAn">0,00 €</div></div>
-    </div>
-    <h2>Répartition</h2>
-    <div class="carte" id="cardRepart">
-      <div class="repart" id="barres"></div>
-      <div class="legende" id="legende"></div>
-    </div>
-  </section>
-
-  <!-- ALERTES -->
-  <section class="vue" id="vAlertes">
-    <div class="haut"><div><div class="titre">Alertes</div></div></div>
-    <div id="alertesListe"></div>
-  </section>
-
-  <!-- LISTE : tous les abonnements, avec suppression et filtres -->
-  <section class="vue" id="vListe">
-    <div class="haut"><div><div class="titre">Tous mes abonnements</div></div></div>
+  <!-- ABONNEMENTS : liste, détails et type -->
+  <section class="vue" id="vAbos">
+    <div class="haut"><div><div class="titre">Abonnements</div></div></div>
     <div class="chip-ligne" id="filtres"></div>
     <div class="ligne" style="margin-bottom:10px"><span class="sous" id="compte"></span><button class="tri" id="triBtn">Par date</button></div>
     <div id="liste"></div>
   </section>
 
+  <!-- MON BILAN -->
+  <section class="vue" id="vBilan">
+    <div class="haut"><div><div class="titre">Mon bilan</div></div></div>
+    <div class="solde flouable" id="carteBilan">
+      <div class="label">Coût annuel estimé</div>
+      <div class="montant flou" id="bilanAn">0,00 €</div>
+      <div class="an flou" id="bilanMois">0,00 € par mois</div>
+    </div>
+    <h2>Par catégorie</h2>
+    <div class="carte" id="cardRepart">
+      <div class="repart" id="barres"></div>
+      <div class="legende" id="legende"></div>
+    </div>
+    <h2>Coût annuel par abonnement</h2>
+    <div id="classement"></div>
+  </section>
+
+  <!-- RÉGLAGES -->
+  <section class="vue" id="vReglages">
+    <div class="haut"><div><div class="titre">Réglages</div></div></div>
+    <h2>Notifications</h2>
+    <div class="reglage" style="flex-direction:column;align-items:stretch">
+      <div><b>Rappel avant prélèvement</b><div class="sous">Combien de jours avant</div></div>
+      <div class="segm" id="segRappel">
+        <button type="button" data-j="1">1 j</button>
+        <button type="button" data-j="3">3 j</button>
+        <button type="button" data-j="5">5 j</button>
+      </div>
+    </div>
+    <h2>Données</h2>
+    <div class="reglage" id="btnCsv"><div><b>Exporter en CSV</b><div class="sous">Fichier sur ton téléphone</div></div><span class="sous">›</span></div>
+  </section>
 </div>
 
 <nav class="nav">
   <button class="on" data-vue="vAccueil"><span class="ic">⌂</span>Accueil</button>
-  <button data-vue="vStats"><span class="ic">◔</span>Stats</button>
+  <button data-vue="vAbos"><span class="ic">≡</span>Abonnements</button>
   <button class="fab" id="navAjout" aria-label="Ajouter">+</button>
-  <button data-vue="vAlertes"><span class="ic">◉</span>Alertes</button>
-  <button data-vue="vListe"><span class="ic">≡</span>Liste</button>
+  <button data-vue="vBilan"><span class="ic">◔</span>Bilan</button>
+  <button data-vue="vReglages"><span class="ic">⚙</span>Réglages</button>
 </nav>
 
 <div class="voile" id="voile">
@@ -200,6 +221,9 @@
       <label id="autreBloc">Précisez la catégorie
         <input type="text" id="categorieAutre" placeholder="Ex. Hébergement serveur">
       </label>
+      <label>Type d'abonnement (facultatif)
+        <input type="text" id="type" placeholder="Ex. Plan Pro, Abonné">
+      </label>
       <label>Site web (facultatif, pour le logo)
         <input type="text" id="site" placeholder="Ex. netflix.com">
       </label>
@@ -213,7 +237,7 @@
 </div>
 
 <script>
-  // ---------- Thèmes : 5 ambiances choisies à la main (pastilles sur l'accueil) ----------
+  // ---------- Thèmes : 5 ambiances, choisies avec les pastilles de l'accueil ----------
   const THEMES = [
     { nom: "Nuit émeraude", pastille: "linear-gradient(135deg,#34d399,#10b981)", vars: { "--bg": "#07140f", "--carte": "#0f2a20", "--carte2": "#163a2d", "--texte": "#ecfdf5", "--muet": "#8fb7a6",
         "--ligne": "rgba(255,255,255,.07)", "--accent": "#34d399", "--accent-texte": "#04110b", "--glow": "rgba(52,211,153,.3)",
@@ -236,9 +260,7 @@
         "--solde": "linear-gradient(135deg,#facc15,#84cc16)", "--solde-texte": "#0e1409",
         "--nav": "#141c0c", "--rouge": "#ff6b6b", "--orange": "#ffb547", "--ok": "#84cc16" } }
   ];
-  let indexTheme = 0;
   function appliquerTheme(i) {
-    indexTheme = i;
     const t = THEMES[i];
     Object.entries(t.vars).forEach(([k, v]) => document.body.style.setProperty(k, v));
     document.getElementById("pts").innerHTML = THEMES.map((th, k) =>
@@ -254,17 +276,18 @@
 
   // ---------- Données ----------
   const CLE = "mes-abonnements-v2";
-  const JOURS_ALERTE = 7;
   const MOIS = { mois: 1, trimestre: 3, an: 12 };
   const LIBELLE = { mois: "mois", trimestre: "trimestre", an: "an" };
   const COULEURS = { "Streaming": "#ff7a8a", "Téléphone / Internet": "#7ab8ff", "Logiciel": "#c4a7ff", "Musique": "#7ee89a", "Jeux": "#ffc857", "Transport": "#6ee7f5", "Autre": "#b8c0ba" };
   const SITES = { "crunchyroll": "crunchyroll.com", "claude": "claude.ai", "hetzner": "hetzner.com", "cloudflare": "cloudflare.com" };
+  const LIENS = { "crunchyroll": "https://www.crunchyroll.com/", "claude": "https://claude.ai/settings", "hetzner": "https://accounts.hetzner.com/", "cloudflare": "https://dash.cloudflare.com/" };
   const DEPART = [
-    { nom: "Crunchyroll", montant: 6.99, periode: "mois", echeance: "2026-11-10", categorie: "Streaming" },
-    { nom: "Claude", montant: 21.60, periode: "mois", echeance: "2026-11-28", categorie: "Logiciel" },
-    { nom: "Hetzner", montant: 6.59, periode: "mois", echeance: "2026-12-03", categorie: "Autre" },
-    { nom: "Cloudflare", montant: 20.00, periode: "mois", echeance: "2026-12-07", categorie: "Autre" }
+    { nom: "Crunchyroll", montant: 6.99, periode: "mois", echeance: "2026-11-10", categorie: "Streaming", type: "Abonné" },
+    { nom: "Claude", montant: 21.60, periode: "mois", echeance: "2026-11-28", categorie: "Logiciel", type: "Plan Pro" },
+    { nom: "Hetzner", montant: null, periode: "mois", echeance: "2026-12-03", categorie: "Autre", type: "À la consommation" },
+    { nom: "Cloudflare", montant: 20.00, periode: "mois", echeance: "2026-12-07", categorie: "Autre", type: "" }
   ];
+  const ouverts = new Set();
   let filtre = "Tous", triParDate = true;
 
   function charger() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
@@ -275,6 +298,18 @@
       localStorage.setItem("seed-v1", "1");
     } catch (e) {}
   }
+  // Mise à jour unique pour les données déjà présentes sur le téléphone
+  if (!localStorage.getItem("migr-v3")) {
+    const l = charger();
+    l.forEach(a => {
+      if (a.nom === "Hetzner") { a.montant = null; a.type = "À la consommation"; }
+      if (a.nom === "Crunchyroll") a.type = "Abonné";
+      if (a.nom === "Claude") a.type = "Plan Pro";
+    });
+    sauver(l);
+    try { localStorage.setItem("migr-v3", "1"); } catch (e) {}
+  }
+  function rappelJours() { const v = parseInt(localStorage.getItem("rappel-jours") || "3", 10); return [1, 3, 5].includes(v) ? v : 3; }
 
   function aujourdhui() { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }
   function parseDate(s) { const [a, m, j] = s.split("-").map(Number); return new Date(a, m - 1, j); }
@@ -288,17 +323,18 @@
     if (m) sauver(l);
     return l;
   }
-  function euros(n) { return n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }); }
-  function echapper(t) { const d = document.createElement("div"); d.textContent = t; return d.innerHTML; }
+  function euros(n) { return n == null ? "—" : n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }); }
+  function echapper(t) { const d = document.createElement("div"); d.textContent = t == null ? "" : t; return d.innerHTML; }
   function couleur(c) { return COULEURS[c] || COULEURS["Autre"]; }
-  function mensuel(a) { return a.montant / MOIS[a.periode]; }
+  function mensuel(a) { return a.montant == null ? 0 : a.montant / MOIS[a.periode]; }
   function quand(j) { return j <= 0 ? "aujourd'hui" : j === 1 ? "demain" : `dans ${j} j`; }
   function siteDe(a) { return a.site || SITES[(a.nom || "").trim().toLowerCase()] || ""; }
+  function lienDe(a) { return LIENS[(a.nom || "").trim().toLowerCase()] || (siteDe(a) ? "https://" + siteDe(a) : ""); }
 
   // Logo : image du site, ou la première lettre si elle n'arrive pas
   function logoHTML(a) {
     const ini = (a.nom || "?").trim().charAt(0).toUpperCase();
-    return `<div class="logo" data-site="${echapper(siteDe(a))}" data-ini="${echapper(ini)}" style="background:${couleur(a.categorie)}">${echapper(ini)}</div>`;
+    return `<div class="logo" data-site="${echapper(siteDe(a))}" style="background:${couleur(a.categorie)}">${echapper(ini)}</div>`;
   }
   function remplirLogos(racine) {
     racine.querySelectorAll(".logo[data-site]").forEach(bloc => {
@@ -313,11 +349,22 @@
   }
 
   // ---------- Pages ----------
+  function rendreAlertes(liste) {
+    const c = document.getElementById("alertesListe");
+    const proches = liste.filter(a => joursAvant(a.echeance) <= rappelJours()).sort((a, b) => a.echeance.localeCompare(b.echeance));
+    if (!proches.length) { c.innerHTML = '<div class="vide">Aucune alerte pour le moment.</div>'; return; }
+    c.innerHTML = proches.map(a => {
+      const j = joursAvant(a.echeance);
+      return `<div class="alerte${j <= 2 ? " urgent" : ""}">${echapper(a.nom)}${a.montant == null ? "" : " (" + euros(a.montant) + ")"} se prélève ${quand(j)}.</div>`;
+    }).join("");
+  }
+
   function rendreAccueil(liste, total) {
     document.getElementById("totalMois").textContent = euros(total);
     document.getElementById("totalAn").textContent = euros(total * 12) + " par an";
     const h = new Date().getHours();
     document.getElementById("salut").textContent = h < 12 ? "Bonjour" : h < 18 ? "Bon après-midi" : "Bonsoir";
+    rendreAlertes(liste);
     const triees = [...liste].sort((a, b) => a.echeance.localeCompare(b.echeance));
     const c = document.getElementById("accueilListe");
     c.innerHTML = triees.length ? "" : '<div class="vide">Aucun abonnement.</div>';
@@ -333,9 +380,9 @@
     remplirLogos(c);
   }
 
-  function rendreStats(liste, total) {
-    document.getElementById("sMois").textContent = euros(total);
-    document.getElementById("sAn").textContent = euros(total * 12);
+  function rendreBilan(liste, total) {
+    document.getElementById("bilanAn").textContent = euros(total * 12);
+    document.getElementById("bilanMois").textContent = euros(total) + " par mois";
     const parCat = {};
     liste.forEach(a => { const k = a.categorie || "Autre"; parCat[k] = (parCat[k] || 0) + mensuel(a); });
     const barres = document.getElementById("barres"), leg = document.getElementById("legende");
@@ -346,21 +393,17 @@
       barres.insertAdjacentHTML("beforeend", `<div style="width:${pct}%;background:${couleur(cat)}"></div>`);
       leg.insertAdjacentHTML("beforeend", `<span><i style="background:${couleur(cat)}"></i>${echapper(cat)} · ${Math.round(pct)} %</span>`);
     });
+    const c = document.getElementById("classement");
+    const classes = [...liste].sort((a, b) => mensuel(b) - mensuel(a));
+    c.innerHTML = classes.length ? classes.map(a => `
+      <div class="carte"><div class="ligne">
+        <div class="gauche">${logoHTML(a)}<div class="infos"><div class="nom">${echapper(a.nom)}</div></div></div>
+        <div class="prix"><div class="montant">${a.montant == null ? "—" : euros(mensuel(a) * 12)}</div><div class="per">par an</div></div>
+      </div></div>`).join("") : '<div class="vide">Aucun abonnement.</div>';
+    remplirLogos(c);
   }
 
-  function rendreAlertes(liste) {
-    const c = document.getElementById("alertesListe");
-    c.innerHTML = "";
-    const proches = liste.filter(a => joursAvant(a.echeance) <= JOURS_ALERTE)
-      .sort((a, b) => a.echeance.localeCompare(b.echeance));
-    if (!proches.length) { c.innerHTML = '<div class="vide">Aucune alerte pour le moment.<br>Les prélèvements dans les 7 prochains jours s\'affichent ici.</div>'; return; }
-    proches.forEach(a => {
-      const j = joursAvant(a.echeance);
-      c.insertAdjacentHTML("beforeend", `<div class="alerte${j <= 2 ? " urgent" : ""}">${echapper(a.nom)} (${euros(a.montant)}) se prélève ${quand(j)}.</div>`);
-    });
-  }
-
-  function rendreListe(liste) {
+  function rendreAbos(liste) {
     const cats = ["Tous", ...new Set(liste.map(a => a.categorie || "Autre"))];
     if (!cats.includes(filtre)) filtre = "Tous";
     const f = document.getElementById("filtres");
@@ -380,36 +423,62 @@
     c.innerHTML = vues.length ? "" : '<div class="vide">Aucun abonnement ici.</div>';
     vues.forEach(a => {
       const j = joursAvant(a.echeance);
-      const bg = j <= 2 ? "rgba(255,107,107,.15)" : j <= JOURS_ALERTE ? "rgba(255,181,71,.15)" : "rgba(126,232,154,.12)";
-      const tx = j <= 2 ? "var(--rouge)" : j <= JOURS_ALERTE ? "var(--orange)" : "var(--accent)";
+      const bg = j <= 2 ? "rgba(255,107,107,.15)" : j <= rappelJours() ? "rgba(255,181,71,.15)" : "rgba(126,232,154,.12)";
+      const tx = j <= 2 ? "var(--rouge)" : j <= rappelJours() ? "var(--orange)" : "var(--accent)";
+      const lien = lienDe(a);
+      const histo = Array.isArray(a.historique) ? a.historique : [];
       c.insertAdjacentHTML("beforeend", `
-        <div class="carte">
-          <div class="ligne">
+        <details class="carte rowdet" data-id="${echapper(a.id)}" ${ouverts.has(a.id) ? "open" : ""}>
+          <summary><div class="ligne">
             <div class="gauche">${logoHTML(a)}<div class="infos"><div class="nom">${echapper(a.nom)}</div>
               <div class="sous">${echapper(a.categorie || "Autre")} · ${enTexte(parseDate(a.echeance))}</div>
               <span class="badge" style="background:${bg};color:${tx}">${quand(j)}</span></div></div>
             <div class="prix"><div class="montant">${euros(a.montant)}</div><div class="per">par ${LIBELLE[a.periode]}</div></div>
+          </div></summary>
+          <div class="detail">
+            <small>Type d'abonnement</small>
+            <input type="text" data-type="${echapper(a.id)}" value="${echapper(a.type || "")}" placeholder="Ex. Plan Pro, Abonné">
+            <small>Prochain prélèvement</small>
+            <div>${enTexte(parseDate(a.echeance))} · ${quand(j)}</div>
+            <small>Historique</small>
+            ${histo.length ? `<ul>${histo.map(h => `<li><span>${echapper(h.date)}</span><span>${euros(h.montant)}</span></li>`).join("")}</ul>` : '<div class="sous">Aucun paiement enregistré pour l’instant.</div>'}
+            ${lien ? `<a href="${echapper(lien)}" target="_blank" rel="noopener">Gérer sur le site ›</a>` : ""}
+            <button class="supp" data-supp="${echapper(a.id)}">Supprimer</button>
           </div>
-          <button class="supp" data-id="${a.id}">Supprimer</button>
-        </div>`);
+        </details>`);
     });
     remplirLogos(c);
-    c.querySelectorAll(".supp").forEach(b => {
+    c.querySelectorAll("details").forEach(d => {
+      d.addEventListener("toggle", () => { d.open ? ouverts.add(d.dataset.id) : ouverts.delete(d.dataset.id); });
+    });
+    c.querySelectorAll("input[data-type]").forEach(inp => {
+      inp.onchange = () => {
+        const l = charger(); const a = l.find(x => x.id === inp.dataset.type);
+        if (a) { a.type = inp.value.trim(); sauver(l); }
+      };
+    });
+    c.querySelectorAll("[data-supp]").forEach(b => {
       b.onclick = () => {
         if (!confirm("Supprimer cet abonnement ?")) return;
-        sauver(charger().filter(x => x.id !== b.dataset.id));
+        sauver(charger().filter(x => x.id !== b.dataset.supp));
+        ouverts.delete(b.dataset.supp);
         rendu();
       };
     });
+  }
+
+  function rendreReglages() {
+    const j = rappelJours();
+    document.querySelectorAll("#segRappel button").forEach(b => b.classList.toggle("on", parseInt(b.dataset.j, 10) === j));
   }
 
   function rendu() {
     const liste = mettreAJour(charger());
     const total = liste.reduce((s, a) => s + mensuel(a), 0);
     rendreAccueil(liste, total);
-    rendreStats(liste, total);
-    rendreAlertes(liste);
-    rendreListe(liste);
+    rendreBilan(liste, total);
+    rendreAbos(liste);
+    rendreReglages();
   }
 
   // ---------- Navigation ----------
@@ -420,6 +489,21 @@
   }
   document.querySelectorAll(".nav button[data-vue]").forEach(b => b.onclick = () => montrer(b.dataset.vue));
   document.getElementById("triBtn").onclick = () => { triParDate = !triParDate; rendu(); };
+  document.querySelectorAll(".flouable").forEach(el => el.onclick = () => el.classList.toggle("revele"));
+  document.querySelectorAll("#segRappel button").forEach(b => {
+    b.onclick = () => { try { localStorage.setItem("rappel-jours", b.dataset.j); } catch (e) {} rendu(); };
+  });
+  document.getElementById("btnCsv").onclick = () => {
+    const l = mettreAJour(charger());
+    const lignes = [["Nom", "Montant", "Période", "Prochain prélèvement", "Catégorie", "Type"].join(";")];
+    l.forEach(a => lignes.push([a.nom, a.montant == null ? "" : String(a.montant).replace(".", ","), LIBELLE[a.periode], a.echeance, a.categorie || "", a.type || ""].join(";")));
+    const blob = new Blob(["﻿" + lignes.join("\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const lien = document.createElement("a");
+    lien.href = url; lien.download = "abonnements.csv";
+    document.body.appendChild(lien); lien.click(); lien.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
 
   // ---------- Ajout ----------
   const voile = document.getElementById("voile");
@@ -443,6 +527,7 @@
       periode: document.getElementById("periode").value,
       echeance: document.getElementById("echeance").value,
       categorie: cat,
+      type: document.getElementById("type").value.trim(),
       site: document.getElementById("site").value.trim()
     });
     if (!sauver(l)) { document.getElementById("erreur").textContent = "Enregistrement impossible : ouvrez la page dans Chrome."; return; }

@@ -1,4 +1,4 @@
-const CACHE = "abonnements-v2";
+const CACHE = "abonnements-v3";
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(["./", "./index.html", "./manifest.json"])));
   self.skipWaiting();
