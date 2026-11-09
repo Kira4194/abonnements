@@ -83,6 +83,11 @@
   .segm button.on { background: var(--accent); color: var(--accent-texte); font-weight: 700; }
   .reglage { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px; border-radius: 16px; background: var(--carte); border: 1px solid var(--ligne); margin-bottom: 8px; cursor: pointer; }
   .reglage b { font-size: .95rem; }
+  .amb-grille { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; width: 100%; }
+  .amb-b { background: none; border: none; color: var(--muet); font: inherit; font-size: .62rem; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; padding: 0; text-align: center; }
+  .amb-s { width: 30px; height: 30px; border-radius: 50%; border: 2px solid transparent; }
+  .amb-b.on { color: var(--texte); font-weight: 700; }
+  .amb-b.on .amb-s { border-color: var(--texte); }
 
   .tri { color: var(--accent); font-size: .85rem; font-weight: 600; cursor: pointer; background: none; border: none; font: inherit; padding: 0; }
 
@@ -163,6 +168,8 @@
   <!-- RÉGLAGES -->
   <section class="vue" id="vReglages">
     <div class="haut"><div><div class="titre">Réglages</div></div></div>
+    <h2>Ambiance</h2>
+    <div class="reglage" style="cursor:default"><div class="amb-grille" id="ambGrille"></div></div>
     <h2>Notifications</h2>
     <div class="reglage" style="flex-direction:column;align-items:stretch">
       <div><b>Rappel avant prélèvement</b><div class="sous">Combien de jours avant</div></div>
@@ -172,6 +179,15 @@
         <button type="button" data-j="5">5 j</button>
       </div>
     </div>
+    <h2>Affichage</h2>
+    <div class="reglage" style="flex-direction:column;align-items:stretch">
+      <div><b>Montants</b><div class="sous">Affichés par mois ou par an</div></div>
+      <div class="segm" id="segMontants">
+        <button type="button" data-m="mois">Mensuel</button>
+        <button type="button" data-m="an">Annuel</button>
+      </div>
+    </div>
+    <div class="reglage" style="cursor:default"><div><b>Devise</b></div><span class="sous">Euro € ›</span></div>
     <h2>Données</h2>
     <div class="reglage" id="btnCsv"><div><b>Exporter en CSV</b><div class="sous">Fichier sur ton téléphone</div></div><span class="sous">›</span></div>
   </section>
@@ -260,11 +276,16 @@
         "--solde": "linear-gradient(135deg,#facc15,#84cc16)", "--solde-texte": "#0e1409",
         "--nav": "#141c0c", "--rouge": "#ff6b6b", "--orange": "#ffb547", "--ok": "#84cc16" } }
   ];
+  let themeCourant = 0;
   function appliquerTheme(i) {
+    themeCourant = i;
     const t = THEMES[i];
     Object.entries(t.vars).forEach(([k, v]) => document.body.style.setProperty(k, v));
     document.getElementById("pts").innerHTML = THEMES.map((th, k) =>
       `<button type="button" class="${k === i ? "on" : ""}" style="background:${th.pastille}" title="${th.nom}" aria-label="${th.nom}" onclick="choisirTheme(${k})"></button>`).join("");
+    const g = document.getElementById("ambGrille");
+    if (g) g.innerHTML = THEMES.map((th, k) =>
+      `<button type="button" class="amb-b${k === i ? " on" : ""}" onclick="choisirTheme(${k})"><span class="amb-s" style="background:${th.pastille}"></span><span>${th.nom}</span></button>`).join("");
   }
   function choisirTheme(k) {
     appliquerTheme(k);
@@ -308,6 +329,11 @@
     });
     sauver(l);
     try { localStorage.setItem("migr-v3", "1"); } catch (e) {}
+  }
+  function montantsMode() { return localStorage.getItem("montants") === "an" ? "an" : "mois"; }
+  function prixHTML(a) {
+    if (montantsMode() === "an") return `<div class="montant">${a.montant == null ? "—" : euros(mensuel(a) * 12)}</div><div class="per">par an</div>`;
+    return `<div class="montant">${euros(a.montant)}</div><div class="per">par ${LIBELLE[a.periode]}</div>`;
   }
   function rappelJours() { const v = parseInt(localStorage.getItem("rappel-jours") || "3", 10); return [1, 3, 5].includes(v) ? v : 3; }
 
@@ -374,7 +400,7 @@
         <div class="carte"><div class="ligne">
           <div class="gauche">${logoHTML(a)}<div class="infos"><div class="nom">${echapper(a.nom)}</div>
             <div class="sous">${enTexte(parseDate(a.echeance))} · ${quand(j)}</div></div></div>
-          <div class="prix"><div class="montant">${euros(a.montant)}</div><div class="per">par ${LIBELLE[a.periode]}</div></div>
+          <div class="prix">${prixHTML(a)}</div>
         </div></div>`);
     });
     remplirLogos(c);
@@ -433,7 +459,7 @@
             <div class="gauche">${logoHTML(a)}<div class="infos"><div class="nom">${echapper(a.nom)}</div>
               <div class="sous">${echapper(a.categorie || "Autre")} · ${enTexte(parseDate(a.echeance))}</div>
               <span class="badge" style="background:${bg};color:${tx}">${quand(j)}</span></div></div>
-            <div class="prix"><div class="montant">${euros(a.montant)}</div><div class="per">par ${LIBELLE[a.periode]}</div></div>
+            <div class="prix">${prixHTML(a)}</div>
           </div></summary>
           <div class="detail">
             <small>Type d'abonnement</small>
@@ -470,6 +496,7 @@
   function rendreReglages() {
     const j = rappelJours();
     document.querySelectorAll("#segRappel button").forEach(b => b.classList.toggle("on", parseInt(b.dataset.j, 10) === j));
+    document.querySelectorAll("#segMontants button").forEach(b => b.classList.toggle("on", b.dataset.m === montantsMode()));
   }
 
   function rendu() {
@@ -492,6 +519,9 @@
   document.querySelectorAll(".flouable").forEach(el => el.onclick = () => el.classList.toggle("revele"));
   document.querySelectorAll("#segRappel button").forEach(b => {
     b.onclick = () => { try { localStorage.setItem("rappel-jours", b.dataset.j); } catch (e) {} rendu(); };
+  });
+  document.querySelectorAll("#segMontants button").forEach(b => {
+    b.onclick = () => { try { localStorage.setItem("montants", b.dataset.m); } catch (e) {} rendu(); };
   });
   document.getElementById("btnCsv").onclick = () => {
     const l = mettreAJour(charger());
