@@ -182,12 +182,19 @@
     <h2>Affichage</h2>
     <div class="reglage" style="flex-direction:column;align-items:stretch">
       <div><b>Montants</b><div class="sous">Affichés par mois ou par an</div></div>
-      <div class="segm" id="segMontants">
+      <div class="segm" id="segMontants" style="grid-template-columns:1fr 1fr">
         <button type="button" data-m="mois">Mensuel</button>
         <button type="button" data-m="an">Annuel</button>
       </div>
     </div>
-    <div class="reglage" style="cursor:default"><div><b>Devise</b></div><span class="sous">Euro € ›</span></div>
+    <div class="reglage" style="flex-direction:column;align-items:stretch">
+      <div><b>Devise</b><div class="sous">Les montants sont saisis en euros</div></div>
+      <div class="segm" id="segDevise" style="grid-template-columns:1fr 1fr">
+        <button type="button" data-d="EUR">€ Euro</button>
+        <button type="button" data-d="USD">$ Dollar</button>
+      </div>
+      <div class="sous" id="tauxBloc" style="display:none;align-items:center;gap:8px">1 € = <input type="number" id="taux" step="0.01" min="0" style="width:90px;padding:8px"> $</div>
+    </div>
     <h2>Données</h2>
     <div class="reglage" id="btnCsv"><div><b>Exporter en CSV</b><div class="sous">Fichier sur ton téléphone</div></div><span class="sous">›</span></div>
   </section>
@@ -349,7 +356,13 @@
     if (m) sauver(l);
     return l;
   }
-  function euros(n) { return n == null ? "—" : n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }); }
+  function devise() { return localStorage.getItem("devise") === "USD" ? "USD" : "EUR"; }
+  function taux() { const v = parseFloat(localStorage.getItem("taux")); return v > 0 ? v : 1; }
+  function euros(n) {
+    if (n == null) return "—";
+    if (devise() === "USD") return (n * taux()).toLocaleString("fr-FR", { style: "currency", currency: "USD" });
+    return n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
+  }
   function echapper(t) { const d = document.createElement("div"); d.textContent = t == null ? "" : t; return d.innerHTML; }
   function couleur(c) { return COULEURS[c] || COULEURS["Autre"]; }
   function mensuel(a) { return a.montant == null ? 0 : a.montant / MOIS[a.periode]; }
@@ -497,6 +510,10 @@
     const j = rappelJours();
     document.querySelectorAll("#segRappel button").forEach(b => b.classList.toggle("on", parseInt(b.dataset.j, 10) === j));
     document.querySelectorAll("#segMontants button").forEach(b => b.classList.toggle("on", b.dataset.m === montantsMode()));
+    document.querySelectorAll("#segDevise button").forEach(b => b.classList.toggle("on", b.dataset.d === devise()));
+    document.getElementById("tauxBloc").style.display = devise() === "USD" ? "flex" : "none";
+    const champ = document.getElementById("taux");
+    if (document.activeElement !== champ) champ.value = taux();
   }
 
   function rendu() {
@@ -523,6 +540,14 @@
   document.querySelectorAll("#segMontants button").forEach(b => {
     b.onclick = () => { try { localStorage.setItem("montants", b.dataset.m); } catch (e) {} rendu(); };
   });
+  document.querySelectorAll("#segDevise button").forEach(b => {
+    b.onclick = () => { try { localStorage.setItem("devise", b.dataset.d); } catch (e) {} rendu(); };
+  });
+  document.getElementById("taux").onchange = e => {
+    const v = parseFloat(e.target.value);
+    try { localStorage.setItem("taux", v > 0 ? String(v) : "1"); } catch (err) {}
+    rendu();
+  };
   document.getElementById("btnCsv").onclick = () => {
     const l = mettreAJour(charger());
     const lignes = [["Nom", "Montant", "Période", "Prochain prélèvement", "Catégorie", "Type"].join(";")];
